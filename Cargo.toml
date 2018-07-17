@@ -1,0 +1,7 @@
+[package]
+name = "colorize"
+version = "0.0.1"
+authors = ["Jacob Killelea <jkillelea@protonmail.ch>"]
+description = ""
+
+[dependencies]
