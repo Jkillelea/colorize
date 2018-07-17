@@ -2,6 +2,8 @@
 name = "colorize"
 version = "0.0.1"
 authors = ["Jacob Killelea <jkillelea@protonmail.ch>"]
-description = ""
+description = "A dirt-simple way to colorize terminal output"
+homepage = "https://github.com/Jkillelea/colorize"
+license = "Beerware"
 
 [dependencies]

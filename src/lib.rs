@@ -1,3 +1,7 @@
+// Crate Colorize
+// file src/lib.rs
+// This file is Beerware. Copyright 2018 Jacob Killelea <jkillelea@protonmail.ch>
+
 use std::fmt;
 
 // possible foreground options in my bash session
@@ -47,6 +51,7 @@ pub trait Colorize {
     fn background(&self, colorcode: BackgroundCode) -> String;
     fn style(&self, colorcode: StyleCode) -> String;
 }
+
 
 impl Colorize for String {
     fn foreground(&self, colorcode: ForegroundCode) -> String {
