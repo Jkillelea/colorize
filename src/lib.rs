@@ -7,7 +7,6 @@ use std::fmt;
 // possible foreground options in my bash session
 #[derive(Clone, Copy, Debug)]
 pub enum ForegroundCode {
-    White  = 0,
     Gray   = 30,
     Red    = 31,
     Green  = 32,
@@ -34,7 +33,7 @@ pub enum BackgroundCode {
 // possible style options in my bash session
 #[derive(Clone, Copy, Debug)]
 pub enum StyleCode {
-    Normal     = 0,
+    Reset      = 0,
     Bold       = 1,
     Pale       = 2,
     Italic     = 3,
@@ -49,40 +48,89 @@ pub enum StyleCode {
 pub trait Colorize {
     fn foreground(&self, colorcode: ForegroundCode) -> String;
     fn background(&self, colorcode: BackgroundCode) -> String;
-    fn style(&self, colorcode: StyleCode) -> String;
+    fn style(&self, colorcode: StyleCode)           -> String;
+    fn reset(&self) -> String;
 }
-
 
 impl Colorize for String {
     fn foreground(&self, colorcode: ForegroundCode) -> String {
-        colorstring(&self, colorcode as i32)
+        color_string(self, colorcode as i32)
     }
 
     fn background(&self, colorcode: BackgroundCode) -> String {
-        colorstring(&self, colorcode as i32)
+        color_string(&self, colorcode as i32)
     }
 
     fn style(&self, stylecode: StyleCode) -> String {
-        colorstring(&self, stylecode as i32)
+        color_string(&self, stylecode as i32)
+    }
+
+    fn reset(&self) -> String {
+        reset_string(&self)
     }
 }
 
 impl Colorize for str {
     fn foreground(&self, colorcode: ForegroundCode) -> String {
-        colorstring(&self, colorcode as i32)
+        color_string(&self, colorcode as i32)
     }
 
     fn background(&self, colorcode: BackgroundCode) -> String {
-        colorstring(&self, colorcode as i32)
+        color_string(&self, colorcode as i32)
     }
 
     fn style(&self, stylecode: StyleCode) -> String {
-        colorstring(&self, stylecode as i32)
+        color_string(&self, stylecode as i32)
+    }
+
+    fn reset(&self) -> String {
+        reset_string(&self)
+    }
+}
+
+impl<'a> Colorize for Box<fmt::Display> {
+    fn foreground(&self, colorcode: ForegroundCode) -> String {
+        let mut buf = String::new();
+        color_buffer(&mut buf, &self, colorcode as i32);
+        buf
+    }
+
+    fn background(&self, colorcode: BackgroundCode) -> String {
+        let mut buf = String::new();
+        color_buffer(&mut buf, &self, colorcode as i32);
+        buf
+    }
+
+    fn style(&self, stylecode: StyleCode) -> String {
+        let mut buf = String::new();
+        color_buffer(&mut buf, &self, stylecode as i32);
+        buf
+    }
+
+    fn reset(&self) -> String {
+        let mut buf = String::new();
+        reset_buffer(&mut buf, &self);
+        buf
     }
 }
 
 // helper method
-fn colorstring(string: &fmt::Display, colorcode: i32) -> String {
-    format!("\x1B[1;{}m{}\x1B[0m", colorcode, string)
+fn color_string(string: &fmt::Display, colorcode: i32) -> String {
+    let mut buffer = String::with_capacity(128); // pre reserve for small strings
+    color_buffer(&mut buffer, &string, colorcode);
+    buffer
 }
 
+fn reset_string(string: &fmt::Display) -> String {
+    let mut buffer = String::with_capacity(128); // pre reserve for small strings
+    reset_buffer(&mut buffer, &string);
+    buffer
+}
+
+fn color_buffer(buffer: &mut fmt::Write, string: &fmt::Display, colorcode: i32) {
+    write!(buffer, "\x1B[1;{}m{}", colorcode, string).unwrap();
+}
+
+fn reset_buffer(buffer: &mut fmt::Write, string: &fmt::Display) {
+    write!(buffer, "{}\x1B[1;0m", string).unwrap();
+}
