@@ -39,7 +39,7 @@ pub enum StyleCode {
     Italic     = 3,
     Underline  = 4,
     Invert     = 7,
-    Invisible  = 8, // TODO: ??
+    Invisible  = 8,
     StrikeThru = 9,
 
 }
