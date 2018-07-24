@@ -46,23 +46,25 @@ pub enum StyleCode {
 
 // basic trait
 pub trait Colorize {
-    fn foreground(&self, colorcode: ForegroundCode) -> String;
-    fn background(&self, colorcode: BackgroundCode) -> String;
-    fn style(&self, colorcode: StyleCode)           -> String;
+    // taking these enums as references might be a performance hit
+    // however, this library is mostly about ergonomics anyways
+    fn foreground(&self, colorcode: &ForegroundCode) -> String;
+    fn background(&self, colorcode: &BackgroundCode) -> String;
+    fn style(&self, colorcode: &StyleCode)           -> String;
     fn reset(&self) -> String;
 }
 
 impl Colorize for String {
-    fn foreground(&self, colorcode: ForegroundCode) -> String {
-        color_string(self, colorcode as i32)
+    fn foreground(&self, colorcode: &ForegroundCode) -> String {
+        color_string(self, *colorcode as i32)
     }
 
-    fn background(&self, colorcode: BackgroundCode) -> String {
-        color_string(&self, colorcode as i32)
+    fn background(&self, colorcode: &BackgroundCode) -> String {
+        color_string(&self, *colorcode as i32)
     }
 
-    fn style(&self, stylecode: StyleCode) -> String {
-        color_string(&self, stylecode as i32)
+    fn style(&self, stylecode: &StyleCode) -> String {
+        color_string(&self, *stylecode as i32)
     }
 
     fn reset(&self) -> String {
@@ -71,16 +73,16 @@ impl Colorize for String {
 }
 
 impl Colorize for str {
-    fn foreground(&self, colorcode: ForegroundCode) -> String {
-        color_string(&self, colorcode as i32)
+    fn foreground(&self, colorcode: &ForegroundCode) -> String {
+        color_string(&self, *colorcode as i32)
     }
 
-    fn background(&self, colorcode: BackgroundCode) -> String {
-        color_string(&self, colorcode as i32)
+    fn background(&self, colorcode: &BackgroundCode) -> String {
+        color_string(&self, *colorcode as i32)
     }
 
-    fn style(&self, stylecode: StyleCode) -> String {
-        color_string(&self, stylecode as i32)
+    fn style(&self, stylecode: &StyleCode) -> String {
+        color_string(&self, *stylecode as i32)
     }
 
     fn reset(&self) -> String {
@@ -89,21 +91,21 @@ impl Colorize for str {
 }
 
 impl<'a> Colorize for Box<fmt::Display> {
-    fn foreground(&self, colorcode: ForegroundCode) -> String {
+    fn foreground(&self, colorcode: &ForegroundCode) -> String {
         let mut buf = String::new();
-        color_buffer(&mut buf, &self, colorcode as i32);
+        color_buffer(&mut buf, &self, *colorcode as i32);
         buf
     }
 
-    fn background(&self, colorcode: BackgroundCode) -> String {
+    fn background(&self, colorcode: &BackgroundCode) -> String {
         let mut buf = String::new();
-        color_buffer(&mut buf, &self, colorcode as i32);
+        color_buffer(&mut buf, &self, *colorcode as i32);
         buf
     }
 
-    fn style(&self, stylecode: StyleCode) -> String {
+    fn style(&self, stylecode: &StyleCode) -> String {
         let mut buf = String::new();
-        color_buffer(&mut buf, &self, stylecode as i32);
+        color_buffer(&mut buf, &self, *stylecode as i32);
         buf
     }
 
@@ -114,7 +116,7 @@ impl<'a> Colorize for Box<fmt::Display> {
     }
 }
 
-// helper method
+// helper methods
 fn color_string(string: &fmt::Display, colorcode: i32) -> String {
     let mut buffer = String::with_capacity(128); // pre reserve for small strings
     color_buffer(&mut buffer, &string, colorcode);

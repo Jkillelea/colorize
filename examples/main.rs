@@ -4,7 +4,6 @@
 
 extern crate colorize;
 use colorize::*;
-use colorize::Colorize;
 
 // A simple example. Iterate through each style/color
 fn main() {
@@ -17,9 +16,9 @@ fn main() {
 
             use BackgroundCode::*;
             for bg in [Regular, Black, Red, Green, Yellow, Blue, Purple, Teal, White].iter() {
-                print!("{}", "colorize".style(*sty)
-                                       .foreground(*fg)
-                                       .background(*bg)
+                print!("{}", "colorize".style(sty)
+                                       .foreground(fg)
+                                       .background(bg)
                                        .reset());
             }
             println!("");
